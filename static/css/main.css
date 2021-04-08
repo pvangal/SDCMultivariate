@@ -1,0 +1,87 @@
+*{
+    font-family: "Gill Sans MT", sans-serif;
+}
+
+body {
+    background-color: #FFFFFF;
+}
+
+h1 {
+    color: #444444;
+}
+
+h4 {
+    color: #444444;
+    margin: 10px;
+}
+
+p {
+    text-align: center;
+    padding: 5px;
+    font-size: large;
+}
+
+.container {
+    background-color: #FFFFFF;
+}
+
+.logo {
+    height: 30px;
+}
+.row-flex {
+    display: flex;
+    flex-wrap: wrap;
+    border: solid;
+    border-width: thin;
+    border-radius: 5px;
+    border-color: #DFDFDF;
+    background-color: #FFFFFF;
+    box-shadow: 2px 2px 2px  lightgrey;
+    margin: 10px 10px 10px 10px;
+    width: 100%;
+    align-items: center;
+}
+
+.title {
+    border: none;
+    box-shadow: none;
+    padding-bottom: 20px;
+    text-align: center;
+}
+
+[class*=col] {
+    background-color: white;
+    align-items: center;
+}
+
+.step-title {
+    background-color: #F7F7F7;
+}
+
+.upload-div {
+    text-align: center;
+}
+
+.button {
+    border: solid;
+    border-width: thin;
+    border-radius: 5px;
+    border-color: #999999;
+    background-color: #222222;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    margin-right: 10px;
+    font-size: 10px;
+    width: 100%;
+}
+
+.button :hover {
+    background-color: #444444;
+}
+
+.GraphContainer {
+    margin: 5px 0;
+    background-color: #F9F9F9;
+}
+
+

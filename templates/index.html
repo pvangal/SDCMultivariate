@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang=en>
+    <title>SDC MVA</title>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <link href= "{{url_for('static', filename='css/main.css')}}" rel='stylesheet'>
+        <script src="/static/js/angular.min.js"></script>
+        <script src="/static/js/plotly-latest.min.js"></script>
+        <script src="/static/js/angular-plotly.js"></script>
+    </head>
+    <body ngapp='MultivariateAnalysis'>
+        <div class='container'>
+            <div class='row-flex title'>
+                <div class='col'>
+                    <img class='logo' src='../static/logo.png'>
+                    <h1>Multivariate Analysis Dashboard</h1>
+                </div>
+            </div>
+
+            <div class='row-flex'>
+                <div class='col-12 step-title'>
+                    <h4>Step 1: Upload and Modify Data</h4>
+                </div>
+                <div class='col-3 upload-div'>
+                    <form>
+                        <input value='Upload Files' type='file' id='files' name='files multiple' style="display: none">
+                        <input type='submit' value='Upload Files' class='button'>
+                        <input type='integer' placeholder="Start Wavelength" style='width: 40%'>
+                        <input type='integer' placeholder="Stop Wavelength" style='width: 40%'>
+                        <input type='Submit' value='Modify Wvaelengths' class='button'>
+                        <input type='integer' placeholder="Start timepoint" style='width: 40%'>
+                        <input type='integer' placeholder="Stop timepoint" style='width: 40%'>
+                        <input type='Submit' value='Modify timepoints' class='button'>
+                    </form>
+                </div>
+                <div class='col-9 graph' ng-controller='SpectrumController'>
+                    Graph will go here
+                </div>
+            </div>
+
+            <div class='row-flex'>
+                <div class='col-12 step-title'>
+                    <h4>Step 2: Principal Component Analysis</h4>
+                </div>
+                <div class='col-3 upload-div'>
+                    <form>
+                        Here is some text in a form
+                    </form>
+                </div>
+                <div class='col-9 graph'>
+                    Graph will go here
+                </div>
+            </div>
+
+            <div class='row-flex'>
+                <div class='col-12 step-title'>
+                    <h4>Step 3: Multivariate Curve Resolution</h4>
+                </div>
+                <div class='col-3 upload-div'>
+                    <form>
+                        Here is some text in a form
+                    </form>
+                </div>
+                <div class='col-9 graph'>
+                    Graph will go here
+                </div>
+            </div>
+
+        </div>
+    </body>
+</html>
+
