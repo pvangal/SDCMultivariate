@@ -1,0 +1,12 @@
+<html>
+    <script src='../static/js/angular.min.js'></script>
+    <script>
+        var app = angular.module('app', []);
+        app.controller('samplecontroller', ['$scope', function($scope) {
+            $scope.message = 'Hello';
+        }]);
+    </script>
+    <body ng-app='app' ng-controller='samplecontroller'>
+        {{message}}    
+    </body>
+</html>

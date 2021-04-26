@@ -1,0 +1,178 @@
+.selected {
+	font-weight: bold !important;
+	background-color: dodgerblue;
+	color: white !important;
+}
+.selected:hover {
+	color: black !important;
+}
+
+ol.breadcrumb {
+	margin-top: 20px;
+}
+
+.rename-device-form-group {
+	white-space: nowrap;
+}
+
+.submit-btn-link,
+.navbar-default .btn-link,
+.navbar-default .submit-btn-link {
+	color: #337ab7;
+}
+
+.submit-btn-link {
+	padding: 0px;
+}
+
+.navbar-default .btn-link,
+.navbar-default .submit-btn-link {
+    padding: 15px;
+}
+
+.submit-btn-link:hover,
+.navbar-default .btn-link:hover,
+.navbar-default .submit-btn-link:hover {
+    text-decoration: none;
+    color: #23527c;
+}
+
+.navbar-default .btn-link:hover,
+.navbar-default .submit-btn-link:hover {
+    background-color: #eeeeee;
+}
+
+/* This overrides Bootstrap's default setting of position:fixed. For some
+reason, when the navbar has position:fixed, every time a Plotly.js chart re-
+renders on the Home/Index page, the page jumps up to the top, but making the
+navbar position:sticky fixes that. */
+nav.navbar-fixed-top {
+	position: sticky;
+}
+
+/*cropping large notebook page name with ellipsis*/
+.overflow-ellipsis{
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+.navbar-brand{
+	padding-top: 8.2px;
+}
+.sdc-logo{
+	height:30px;
+	width:auto;
+}
+
+.huge{
+	padding-right:5px;
+}
+
+label.not-bold {
+	font-weight: normal;
+}
+
+li.reaction-detail-manual-commands-list:not(:last-child) {
+	margin-bottom: 10px;
+}
+
+th.filter-table {
+	-webkit-user-select:none;
+	-moz-user-select:none;
+	-ms-user-select:none;
+	user-select:none;
+	cursor:pointer;
+}
+
+tr.kapacitor-alert-disabled {
+	color: #999;
+}
+tr.kapacitor-alert-disabled div.modal-content {
+	color: #333;
+}
+
+button.table-button-no-padding {
+	padding: 0px;
+}
+
+/* navbar-lower contains notifications for Kapacitor alerts that are currently firing */
+ul.navbar-lower li {
+	color: #f00;
+	font-weight: bold;
+	padding-left: 15px;
+	padding-right: 15px;
+	width: 100%;
+}
+@media (min-width: 768px) {
+	ul.navbar-lower {
+		width: 100%;
+		position: sticky;
+		margin-left: 250px;
+		margin-right: 0px;
+	}
+}
+@media (max-width: 767px) {
+	ul.navbar-lower {
+		margin-left: 0px;
+		margin-right: 0px;
+	}
+}
+
+.navbar-default li form.narrow-padding {
+	padding-left: 8px;
+	padding-right: 8px;
+}
+.navbar-default li form.narrow-padding button {
+	padding-left: 7px;
+	padding-right: 7px;
+}
+
+#page-wrapper {
+	margin-top: 20px;
+}
+
+#alert-messages {
+  padding: 20px 15px 0 15px;
+  background-color: white;
+}
+@media (min-width: 768px) {
+  #alert-messages {
+    margin: 0 0 0 250px;
+    padding: 20px 30px 0 30px;
+    border-left: 1px solid #e7e7e7;
+  }
+}
+
+.loadingSpinner {
+    display: inline-block;
+    border: 8px solid #f3f3f3;
+    border-top: 8px solid #aaaaaa;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 2s linear infinite;
+    -webkit-animation: spin 2s linear infinite; /* Safari */
+}
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loadingSpinnerParagraph {
+    padding-left: 5px;
+    padding-top: 15px;
+    display: inline-block;
+    vertical-align: top;
+}
+
+#loadingSpinnerDiv {
+    padding-top: 10px;
+    margin: auto;
+}
+.keepTogether{
+    break-inside: avoid;
+}

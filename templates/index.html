@@ -3,71 +3,142 @@
     <title>SDC MVA</title>
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-        <link href= "{{url_for('static', filename='css/main.css')}}" rel='stylesheet'>
-        <script src="/static/js/angular.min.js"></script>
+        <link href= "{{url_for('static', filename='css/bootstrap.css')}}" rel='stylesheet'>
+        <link href= "{{url_for('static', filename='css/sb-admin-2.css')}}" rel='stylesheet'>
+        <script src="https://kit.fontawesome.com/6c62b888ab.js" crossorigin="anonymous"></script>
+        <link href= "{{url_for('static', filename='css/main-1.css')}}" rel='stylesheet'>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
         <script src="/static/js/plotly-latest.min.js"></script>
         <script src="/static/js/angular-plotly.js"></script>
     </head>
-    <body ngapp='MultivariateAnalysis'>
-        <div class='container'>
-            <div class='row-flex title'>
-                <div class='col'>
-                    <img class='logo' src='../static/logo.png'>
-                    <h1>Multivariate Analysis Dashboard</h1>
-                </div>
+    <body ng-app="MultivariateAnalysis">
+        <div>
+            <div style='text-align: center'>
+                <img class='sdc-logo' src='../static/logo.png'>
+                <h1>Multivariate Analysis Dashboard</h1>
             </div>
+        </div>
+        <div class='container' id="page-wrapper">
+            
 
-            <div class='row-flex'>
-                <div class='col-12 step-title'>
+            <div class='panel panel-default' ng-controller='SpectrumController'>
+                <div class='panel-heading'>
                     <h4>Step 1: Upload and Modify Data</h4>
                 </div>
-                <div class='col-3 upload-div'>
-                    <form>
-                        <input value='Upload Files' type='file' id='files' name='files multiple' style="display: none">
-                        <input type='submit' value='Upload Files' class='button'>
-                        <input type='integer' placeholder="Start Wavelength" style='width: 40%'>
-                        <input type='integer' placeholder="Stop Wavelength" style='width: 40%'>
-                        <input type='Submit' value='Modify Wvaelengths' class='button'>
-                        <input type='integer' placeholder="Start timepoint" style='width: 40%'>
-                        <input type='integer' placeholder="Stop timepoint" style='width: 40%'>
-                        <input type='Submit' value='Modify timepoints' class='button'>
-                    </form>
-                </div>
-                <div class='col-9 graph' ng-controller='SpectrumController'>
-                    Graph will go here
+                <div class="panel-body">
+                    <div class='col-lg-3'>
+                        <form ng-submit="submit()" enctype="multipart/form-data">
+                            <input type='file' multiple name='file' file-model='files'>
+                            <button type='submit' class='btn btn-default'>
+                                Upload Files</button>
+                        </form>
+                        <br>
+                        <form ng-submit='update_wavelengths()' enctype="multipart/form-data">
+                            Enter Wavelength range: <input type='text' class='form-control' ng-model='wavelength_low' placeholder='Low wavelength'>
+                            <input type='text' class='form-control' ng-model='wavelength_high' placeholder='High wavelength'>
+                            <button type='submit' class='btn btn-default'>
+                                <i class="fas fa-crop-alt"></i>
+                                Update Wavelengths</button>
+                        </form>
+                        <br>
+                        <form ng-submit='update_time()' enctype="multipart/form-data">
+                            Enter Time range: <input type='text' class='form-control' ng-model='time_low' placeholder='Low time'>
+                            <input type='text' class='form-control' ng-model='time_high' placeholder='High time'>
+                            <button type='submit' class='btn btn-default'>Update Time</button>
+                        </form>
+                    </div>
+                    <div class='col-lg-9 graph' style='text-align: center;'>
+                        <div class = 'loadingSpinner' ng-show='isProgressBarVisible'>
+
+                        </div>
+                        <div ng-if='plotlydata'>
+                            <plotly plotly-data='plotlydata' plotly-layout='layout' plotly-options='plotlyOptions' updateOnLayoutChange='true'></plotly>
+                        </div>
+                        <div ng-if='!plotlydata'>
+                            No data yet
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class='row-flex'>
-                <div class='col-12 step-title'>
+            <div class='panel panel-default' ng-controller='PCAController'>
+                <div class='panel-heading'>
                     <h4>Step 2: Principal Component Analysis</h4>
                 </div>
-                <div class='col-3 upload-div'>
-                    <form>
-                        Here is some text in a form
-                    </form>
-                </div>
-                <div class='col-9 graph'>
-                    Graph will go here
+                <div class='panel-body'>
+                    <div class='col-lg-3 upload-div'>
+                        <form ng-submit='submit()' enctype="multipart/form-data">
+                            <input type='text' class='form-control' ng-model='ncomponents' name='no_components'>
+                            <button type='submit' class='btn btn-default'>Compute PCA</button>
+                        </form>
+                        <div ng-if='plotlydata' style='margin-top: 15px;'>
+                            <a href='/download_pca' target="_blank" download="PCA_data.xlsm">
+                            <i class='fa fa-download fa-fw'></i>
+                            Download PCA data
+                            </a>
+                        </div>
+                    </div>
+                    <div class='col-lg-9 graph' style='text-align: center;'>
+                        <div ng-if='plotlydata'>
+                            <plotly plotly-data='plotlydata' plotly-layout='layout' plotly-options='plotlyOptions'></plotly>
+                        </div>
+                        <div ng-if='plotlydata' class="table-responsive col-lg-5">
+                            <table class="table table-striped table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                    <th> Principal Component</th>
+                                    <th> Percent variance explained</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat='entry in explainedVariance'>
+                                        <td>
+                                            {{"{{entry[0]}}"}}
+                                        </td>
+                                        <td>
+                                            {{"{{entry[1]}}"}}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            
+                        </div>
+                        <div ng-if='!plotlydata'>
+                            No data yet
+                        </div>
+                    </div>
                 </div>
             </div>
-
-            <div class='row-flex'>
-                <div class='col-12 step-title'>
+            <div class='panel panel-default' ng-controller='MCRController'>
+                <div class='panel-heading'>
                     <h4>Step 3: Multivariate Curve Resolution</h4>
                 </div>
-                <div class='col-3 upload-div'>
-                    <form>
-                        Here is some text in a form
-                    </form>
-                </div>
-                <div class='col-9 graph'>
-                    Graph will go here
+                <div class='panel-body'>
+                    <div class='col-lg-3 upload-div'>
+                        <form ng-submit='submit()' enctype="multipart/form-data">
+                            <input type='text' class='form-control' ng-model='ncomponents'>
+                            <button type='submit' class='btn btn-default'>Compute MCR</button>
+                        </form>
+                    </div>
+                    <div class='col-lg-9' style='text-align: center;'>
+                        <div class = 'loadingSpinner' ng-show='isProgressBarVisible'></div>
+                        <div ng-if='plotlydataConcentrations'>
+                            <plotly plotly-data='plotlydataConcentrations' plotly-layout='layout' plotly-options='plotlyOptions'></plotly>
+                            <plotly plotly-data='plotlydataComponents' plotly-layout='layout' plotly-options='plotlyOptions'></plotly>
+                        </div>
+                        <div ng-if='!plotlydata'>
+                            No data yet
+                        </div>
+                    </div>
                 </div>
             </div>
 
         </div>
+        <script src="/static/js/app.js"></script>
+        <script src="/static/js/controllers/SpectrumController.js"></script>
+        <script src="/static/js/controllers/PCAController.js"></script>
+        <script src="/static/js/controllers/MCRController.js"></script>
+        <script src="/static/js/directives/fileModel.js"></script>
     </body>
 </html>
 
