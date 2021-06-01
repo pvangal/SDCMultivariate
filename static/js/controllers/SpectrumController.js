@@ -20,11 +20,14 @@ app.controller('SpectrumController', ['$scope', '$http', function($scope, $http)
     };
     
     $scope.submit = function() {
+        if ($scope.datatype == 'Raman' && $scope.files.length > 1) {
+            return
+        } 
         $scope.isProgressBarVisible = true;
         fd = new FormData ();
         for (var i = 0; i < $scope.files.length; i++){
             fd.append('file', $scope.files[i]);}
-        
+    
         $http({
             method: 'POST',
             url: '/get_spectral_data',

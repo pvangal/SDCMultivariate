@@ -1,5 +1,57 @@
 import io
 import xlsxwriter
+import pickle
+import numpy as np
+
+def readIR(file_list, data, wavelengths, timestamps):
+    for file in file_list:
+        file_contents = file.stream.read().decode("utf-8")
+        data.append([])
+        csvfile = file_contents.split('\n')
+        csvfile.pop()
+        if wavelengths == []:
+            for row in csvfile:
+                try:
+                    data[-1].append(float(row.split(',')[1].strip()))
+                    wavelengths.append(float(row.split(',')[0].strip()))
+                except:
+                    data[-1].append(row.split(',')[1].strip())
+                    wavelengths.append(row.split(',')[0].strip())
+        else:
+            for row in csvfile:
+                try:
+                    data[-1].append(float(row.split(',')[1].strip()))
+                except:
+                    data[-1].append(row.split(',')[1].strip())
+    for column in data:
+        timestamps.append(to_seconds(column.pop(0)))    
+    wavelengths.pop(0) #Removes first entry which is the title "Wavelengths"
+    with open('arrayfile', 'wb') as outfile:
+        pickle.dump(data, outfile)
+    with open('wavelengths', 'wb') as outfile:
+        pickle.dump(wavelengths, outfile)
+    with open('timestamps', 'wb') as outfile:
+        pickle.dump(timestamps, outfile)
+
+def readRaman(file_list, data, wavelengths, timestamps):
+    for file in file_list:
+        file_contents = file.stream.read().decode("utf-8")
+    csvfile = file_contents.split('\n')
+    print (len(csvfile))
+    csvfile.pop(-1)
+    for row in csvfile:
+        data.append([float(entry.rstrip()) for entry in row.split(',')])
+    data.pop(0)
+    wavelengths = [entry for entry in range(0, len(data), 1)] 
+    timestamps = [entry for entry in range(0, len(data[0]), 1)]
+    print("Shape of array being stored into pickle")
+    print(np.array(data).shape)
+    with open('arrayfile', 'wb') as outfile:
+        pickle.dump(data, outfile)
+    with open('wavelengths', 'wb') as outfile:
+        pickle.dump(wavelengths, outfile)
+    with open('timestamps', 'wb') as outfile:
+        pickle.dump(timestamps, outfile)
 
 def find_low_index(listname, entry):
     index = 0
@@ -27,6 +79,9 @@ def download_excel(data_dict):
         data.append([]) 
         data[-1].append(key)
         for entry in data_dict[key]:
+            if (type(entry) is list):
+                for datum in entry:
+                    data[-1].append(datum) 
             data[-1].append(entry) 
     print("this is data in download_excel")
     print(data)

@@ -15,7 +15,7 @@
         <div>
             <div style='text-align: center'>
                 <img class='sdc-logo' src='../static/logo.png'>
-                <h1>Multivariate Analysis Dashboard</h1>
+                <h1>Spectral analysis toolkit</h1>
             </div>
         </div>
         <div class='container' id="page-wrapper">
@@ -28,6 +28,12 @@
                 <div class="panel-body">
                     <div class='col-lg-3'>
                         <form ng-submit="submit()" enctype="multipart/form-data">
+                            <input type='radio' ng-model='datatype' value='ReactIR'>
+                            ReactIR
+                            <input type='radio' ng-model='datatype' value='Raman'>
+                            Raman
+                            <br>
+                            <br>
                             <input type='file' multiple name='file' file-model='files'>
                             <button type='submit' class='btn btn-default'>
                                 Upload Files</button>
@@ -77,17 +83,13 @@
                             Download PCA data
                             </a>
                         </div>
-                    </div>
-                    <div class='col-lg-9 graph' style='text-align: center;'>
-                        <div ng-if='plotlydata'>
-                            <plotly plotly-data='plotlydata' plotly-layout='layout' plotly-options='plotlyOptions'></plotly>
-                        </div>
-                        <div ng-if='plotlydata' class="table-responsive col-lg-5">
+                        <br>
+                        <div ng-if='plotlydata' class="table-responsive">
                             <table class="table table-striped table-bordered table-hover">
                                 <thead>
                                     <tr>
                                     <th> Principal Component</th>
-                                    <th> Percent variance explained</th>
+                                    <th> % variance explained</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -102,6 +104,11 @@
                                 </tbody>
                             </table>
                             
+                        </div>
+                    </div>
+                    <div class='col-lg-9 graph' style='text-align: center;'>
+                        <div ng-if='plotlydata'>
+                            <plotly plotly-data='plotlydata' plotly-layout='layout' plotly-options='plotlyOptions'></plotly>
                         </div>
                         <div ng-if='!plotlydata'>
                             No data yet
@@ -119,6 +126,17 @@
                             <input type='text' class='form-control' ng-model='ncomponents'>
                             <button type='submit' class='btn btn-default'>Compute MCR</button>
                         </form>
+                        <div ng-if='plotlydataConcentrations' style='margin-top: 15px;'>
+                            <a href='/download_mcr_spectra' target="_blank" download="MCR_spectra.xlsm">
+                            <i class='fa fa-download fa-fw'></i>
+                            Download MCR spectra
+                            </a>
+                            <br>
+                            <a href='/download_mcr_concentrations' target="_blank" download="MCR_concentrations.xlsm">
+                            <i class='fa fa-download fa-fw'></i>
+                                Download MCR concentrations
+                            </a>
+                        </div>
                     </div>
                     <div class='col-lg-9' style='text-align: center;'>
                         <div class = 'loadingSpinner' ng-show='isProgressBarVisible'></div>
