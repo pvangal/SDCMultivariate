@@ -12,6 +12,7 @@ from pymcr.mcr import McrAR
 from pymcr.regressors import OLS, NNLS
 from pymcr.constraints import ConstraintNonneg, ConstraintNorm
 from pymcr.metrics import mse
+import math
 
 app = Flask(__name__)
 app.secret_key = 'W^4\xf3\x02\xb4\xf5\r\xbd\x9b\x99\x17\xf4Zp\xf5\xfe\x9f\xf1\xc1\xdc\xd5\xdf.'
@@ -45,7 +46,6 @@ def update_wavelength():
 @app.route('/update_time/', methods=['GET', 'POST'])
 def update_time():
     [time_low, time_high] = [int(request.args.get('time_low')), int(request.args.get('time_high'))]
-    print(time_low)
     session['time_low'] = time_low
     session['time_high'] = time_high
     return 'Success'
@@ -60,14 +60,28 @@ def compute_pca():
     with open('timestamps', 'rb') as infile:
         timestamps = pickle.load(infile)
     
-    wavelength_low_index = helpers.find_low_index(wavelengths, session['wavelength_low'])
-    wavelength_high_index = helpers.find_high_index(wavelengths, session['wavelength_high'])
-    time_low_index = helpers.find_low_index(timestamps, session['time_low'])
-    time_high_index = helpers.find_high_index(timestamps, session['time_high'])
+    try:
+        wavelength_low_index = helpers.find_low_index(wavelengths, session['wavelength_low'])
+    except KeyError:
+        wavelength_low_index = 0
+    try:
+        wavelength_high_index = helpers.find_high_index(wavelengths, session['wavelength_high'])
+    except KeyError:
+        wavelength_high_index = len(wavelengths)
+    try:
+        time_low_index = helpers.find_low_index(timestamps, session['time_low'])
+    except KeyError:
+        time_low_index = 0
+    try:
+        time_high_index = helpers.find_high_index(timestamps, session['time_high'])
+    except:
+        time_high_index = len(timestamps)
 
     newarray = []
+
     for column in array[time_low_index : time_high_index]:
         newarray.append(column[wavelength_low_index : wavelength_high_index])
+
     print("shape of array being taken to preprocessing")
     print((np.array(newarray)).shape)
     array1 = preprocessing.normalize(np.transpose(newarray))
@@ -77,13 +91,13 @@ def compute_pca():
     components = pca.fit_transform(array1)
     print("Shape of PCA components")
     print(components.shape)
-    with open('compfile', 'wb') as outfile:
-        pickle.dump(components, outfile)
-    returnfile = {'index': [], 'variance': []}
     
+    returnfile = {'index': [], 'variance': []}
     for index, variance in enumerate(pca.explained_variance_ratio_.tolist()):
         returnfile['index'].append(index + 1)
         returnfile['variance'].append(round((variance * 100), 2))
+    with open('compfile', 'wb') as outfile:
+        pickle.dump(components, outfile)
     with open('pca_data', 'wb') as outfile:
         pickle.dump(returnfile, outfile)
     return jsonify(returnfile)
@@ -99,41 +113,48 @@ def compute_mcr():
         timestamps = pickle.load(infile)
     with open('compfile', 'rb') as infile:
         components = pickle.load(infile)
-    
-    wavelength_low_index = helpers.find_low_index(wavelengths, session['wavelength_low'])
-    wavelength_high_index = helpers.find_high_index(wavelengths, session['wavelength_high'])
-    time_low_index = helpers.find_low_index(timestamps, session['time_low'])
-    time_high_index = helpers.find_high_index(timestamps, session['time_high'])
+
+    try:
+        wavelength_low_index = helpers.find_low_index(wavelengths, session['wavelength_low'])
+    except KeyError:
+        wavelength_low_index = 0
+    try:
+        wavelength_high_index = helpers.find_high_index(wavelengths, session['wavelength_high'])
+    except KeyError:
+        wavelength_high_index = len(wavelengths)
+    try:
+        time_low_index = helpers.find_low_index(timestamps, session['time_low'])
+    except KeyError:
+        time_low_index = 0
+    try:
+        time_high_index = helpers.find_high_index(timestamps, session['time_high'])
+    except:
+        time_high_index = len(timestamps)
 
     newarray = []
     for column in array[time_low_index : time_high_index]:
         newarray.append(column[wavelength_low_index : wavelength_high_index])
-    # ST_guess = []
-    # for index in range(0, n):
-    #     ST_guess.append([])
-    #     for entry in range(0, len(components)):
-    #         ST_guess[-1].append(components[entry][index])
     
-    print("shape of components read in")
-    print(components.shape)
     n = int(request.data.decode("utf-8"))
+
     components1 = components[:,:n]
-    print("Shape of components1 to be used in mcrar")
-    print(components1.shape)
-    print("Shape of array to be fit")
-    print((np.array(newarray)).shape)
-   
+
     mcrar = McrAR(max_iter=100, st_regr='NNLS', c_regr=OLS(), c_constraints=[ConstraintNonneg()])
     mcrar.fit(np.array(newarray), ST= np.transpose(components1), verbose=True)
     print("MCRAR successful")
+
     spectra = mcrar.ST_opt_.tolist()
     concentration = np.transpose(mcrar.C_opt_).tolist()
-    # D_calculated = mcrar.D_opt_
-    # D_actual = np.array(newarray, float)
-    # error = mse(mcrar.C_opt_, mcrar.ST_opt_, D_actual, D_calculated)
-    # print("error is" + str(error))
+    D_calculated = mcrar.D_opt_
+    D_actual = np.array(newarray, float)
+    residual = D_actual - D_calculated
+    rsquared = math.sqrt((np.sum(np.multiply(D_actual,D_actual))-np.sum(np.multiply(residual, residual)))/np.sum(np.multiply(D_actual,D_actual)))
+    rsquared = round(rsquared, 3)
+    lackoffit = 100*math.sqrt(np.sum(np.multiply(residual,residual))/np.sum(np.multiply(D_actual,D_actual)))
+    lackoffit = round(lackoffit, 2)
     wavelengths = wavelengths[wavelength_low_index : wavelength_high_index]
-    returnfile = {'concentration': concentration, 'timestamps': timestamps, 'spectra': spectra, 'wavelengths': wavelengths}
+    timestamps = timestamps[time_low_index : time_high_index]
+    returnfile = {'concentration': concentration, 'timestamps': timestamps, 'spectra': spectra,'wavelengths': wavelengths, 'statistics': {'R^2': rsquared, 'LOF (%)': lackoffit}}
     with open('mcr_data', 'wb') as outfile:
         pickle.dump(returnfile, outfile)
     return jsonify(returnfile)

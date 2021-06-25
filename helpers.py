@@ -24,8 +24,13 @@ def readIR(file_list, data, wavelengths, timestamps):
                 except:
                     data[-1].append(row.split(',')[1].strip())
     for column in data:
-        timestamps.append(to_seconds(column.pop(0)))    
+        timestamps.append(to_seconds(column.pop(0)))
+        column.reverse()  
+    start_time = timestamps[0]
+    for index in range(len(timestamps)):
+        timestamps[index] = timestamps[index] - start_time
     wavelengths.pop(0) #Removes first entry which is the title "Wavelengths"
+    wavelengths.reverse()
     with open('arrayfile', 'wb') as outfile:
         pickle.dump(data, outfile)
     with open('wavelengths', 'wb') as outfile:
@@ -62,10 +67,11 @@ def find_low_index(listname, entry):
 
 def find_high_index(listname, entry):
     index = 0
-    while (True and index < (len(listname) - 1)):
+    while (True and index < len(listname)):
         if int(listname[index]) > entry:
             return index-1
         index += 1
+    return len(listname)
 
 def to_seconds(timestamp):
     [hours, minutes, seconds] = [float(entry) for entry in timestamp.split(':')]

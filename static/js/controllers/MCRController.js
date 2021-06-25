@@ -37,6 +37,7 @@ app.controller('MCRController', ['$scope', '$http', function($scope, $http) {
                         type: 'line',
                     });
                 }
+                $scope.statistics = response.data['statistics']; 
             }, function(response) {
                 $scope.isProgressBarVisible = false;
                 $scope.plotlydata = null
